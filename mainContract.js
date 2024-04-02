@@ -1,6 +1,6 @@
 //alert("js connected")
 import {ethers} from "./ethers-5.6.esm.min.js"
-import {mainContractAddress,mainContractABI,numberOfGoalscontractAddress, numberOfGoalABI} from "./constant.js"
+import {mainContractAddress,mainContractABI,numberOfGoalscontractAddress, numberOfGoalABI, courseWinOrLoseABI} from "./constant.js"
 
 let connectEl = document.getElementById("connect_Button")
 connectEl.onclick = connect
@@ -18,6 +18,7 @@ let retrunNOGCreatedEl = document.getElementById("return_NOG_totalNumber")
 retrunNOGCreatedEl.onclick = retrunTotalNOGCreated
 let returnCWOLEl = document.getElementById("return_CWOL")
 returnCWOLEl.onclick = returnCWOL
+let allCWOL = [];
 
 
 const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -82,7 +83,7 @@ async function returnTotalCWOLCreated() {
     if(window.ethereum !== "undefined") {
         try{
      
-      console.log(totalNumber.toNumber())
+      console.log(totalNumberOfCWOL.toNumber())
         }catch(error){
             console.log(error)
         }
@@ -91,24 +92,42 @@ async function returnTotalCWOLCreated() {
 async function retrunTotalNOGCreated() {
    if(window.ethereum !== "undefined"){
     try{
-        let totalNumber = await mainContract.returnNOGLength();
-        console.log(totalNumber.toNumber())
+        let totalNumberOfCWOL = await mainContract.returnNOGLength();
+        console.log(totalNumberOfCWOL.toNumber())
     }catch(error){
         console.log(error)
     }
    }
 }
+//let CWOLaddresses = []
+//let encapulateCWOLaddresses = []
+let deployedCWOLaddresses = []
 async function returnCWOL() {
     if (window.ethereum !== "undefined") {
         try {
-            let allCWOL = [];
-            for (let i = 0; i < totalNumberOfCWOL; i++) { // Corrected loop condition
-                allCWOL.push(await mainContract._courseWinOrLoseArray(i));
+            for (let i = 0; i < totalNumberOfCWOL; i++) {
+                let CWOLaddresses = await mainContract._courseWinOrLoseArray(i);
+                let encapsulateCWOLaddresses = `"${CWOLaddresses}"`;
+                deployedCWOLaddresses.push(new ethers.Contract(encapsulateCWOLaddresses, courseWinOrLoseABI, signer));
             }
-            console.log(allCWOL);
+            console.log(deployedCWOLaddresses);
+            // Call showAllCWOLName after all contracts are instantiated
+            await showAllCWOLName();
         } catch(error) {
             console.log(error);
         }
     }
 }
 
+async function showAllCWOLName() {
+    if (window.ethereum !== "undefined") {
+        try {
+            for (let i = 0; i < totalNumberOfCWOL; i++) {
+                // Await the returnContractName method before logging
+                console.log(await deployedCWOLaddresses[i].returnContractName());
+            }
+        } catch(error) {
+            console.log(error);
+        }
+    }
+}
