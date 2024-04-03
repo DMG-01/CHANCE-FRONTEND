@@ -183,33 +183,36 @@ async function removeOwner() {
  let returnBetFunctionEl = document.getElementById("returnBetFunction")
  returnBetFunctionEl.onclick = returnBetFunctions
 
- async function returnBetFunctions()  {
-     try {
-        for(let i = 0; i < totalNumberOfCWOL; i++) {
-            let contract =await  mainContract._courseWinOrLoseArray(i)
-            let newContract = new ethers.Contract(contract,courseWinOrLoseABI,signer)
+ async function returnBetFunctions() {
+    try {
+        for (let i = 0; i < totalNumberOfCWOL; i++) {
+            let contract = await mainContract._courseWinOrLoseArray(i);
+            let newContract = new ethers.Contract(contract, courseWinOrLoseABI, signer);
 
-            let button = document.createElement("button")
-            button.textContent = `BET+${i}`
-            
-            let betInput = document.createElement("input")
-            betInput.type = "checkbox"
+            let button = document.createElement("button");
+            button.textContent = `BET+${i}`;
 
-            let betAmount = document.createElement("input")
-            betAmount.innerHTML = "ENTER BET AMOUNT"
-            betAmount.type = "number"
-
-            document.body.appendChild(button)
-            document.body.appendChild(betInput)
-            document.body.appendChild(betAmount)
+            document.body.appendChild(button);
 
             button.addEventListener("click", async function() {
-            
-             newContract.bet(betInput.value, {value : ethers.utils.parseEther(betAmount.input)})
-             console.log(`you placed an amount of ${betAmount.value} with a value of ${betInput.value}`)
-            })
+                try {
+                    // Set the fixed bet amount and value
+                    let betAmount = "0.005"; // Fixed amount
+                    let betValue = true;     // Fixed value
+
+                    // Perform the bet action using the contract
+                    await newContract.bet(betValue, {
+                        value: ethers.utils.parseEther(betAmount),
+                        gasLimit: 2000000 // Set a manual gas limit
+                    });
+
+                    console.log(`You placed a bet of ${betAmount} with a value of ${betValue}`);
+                } catch (error) {
+                    console.log(error);
+                }
+            });
         }
-     }catch(error){
-        console.log(error)
-     }
- }
+    } catch (error) {
+        console.log(error);
+    }
+}
