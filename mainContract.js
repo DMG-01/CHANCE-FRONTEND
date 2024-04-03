@@ -166,4 +166,18 @@ async function removeOwner() {
         console.log(error)
     }
  }
+ let returnProtocolCutEl = document.getElementById("returnProtocolCut")
+ returnProtocolCutEl.onclick = returnProtocolCutofCWOL
+ async function returnProtocolCutofCWOL() {
+     try {
+        for(let i = 0 ; i < totalNumberOfCWOL; i++) {
+            let contract =await  mainContract._courseWinOrLoseArray(i)
+            let newContract = new ethers.Contract(contract,courseWinOrLoseABI,signer)
+            let protocolCut = await newContract.returnProtocolCut()
+            console.log(`the protocol cut of contract of address ${contract} is ${protocolCut}`)
+        }
+     }catch(error){
+        console.log(error)
+     }
+ }
  
