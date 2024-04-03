@@ -139,15 +139,17 @@ async function showAllCWOLName() {
     }
 }
 let addOwnerEl = document.getElementById("addOwner")
-addOwnerEl.onclick =  addOwners()
+addOwnerEl.onclick =  addOwners
 
 async function addOwners() {
-   if(window.ethereum == "undefined") {
-    try{
-        let newOwnerEl = document.getElementById("newOwnerInput").value
-        await mainContract.addOwner(newOwnerEl);
-    }catch(error){
-        console.log(error)
+    try {
+         // Get the input value for the new owner address
+         let newOwnerEl = document.getElementById("newOwnerInput").value;
+ 
+         // Call the addOwner function with the new owner address
+         await mainContract.addOwner(/*'0x1Cf795D206c9213Fc9fb31f8513b7D523575a2e0'*/ ""+ newOwnerEl + "");
+    } catch(error) {
+         console.log(error);
     }
-   }
-}
+ }
+ 
