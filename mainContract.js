@@ -180,4 +180,36 @@ async function removeOwner() {
         console.log(error)
      }
  }
- 
+ let returnBetFunctionEl = document.getElementById("returnBetFunction")
+ returnBetFunctionEl.onclick = returnBetFunctions
+
+ async function returnBetFunctions()  {
+     try {
+        for(let i = 0; i < totalNumberOfCWOL; i++) {
+            let contract =await  mainContract._courseWinOrLoseArray(i)
+            let newContract = new ethers.Contract(contract,courseWinOrLoseABI,signer)
+
+            let button = document.createElement("button")
+            button.textContent = `BET+${i}`
+            
+            let betInput = document.createElement("input")
+            betInput.type = "checkbox"
+
+            let betAmount = document.createElement("input")
+            betAmount.innerHTML = "ENTER BET AMOUNT"
+            betAmount.type = "number"
+
+            document.body.appendChild(button)
+            document.body.appendChild(betInput)
+            document.body.appendChild(betAmount)
+
+            button.addEventListener("click", async function() {
+            
+             newContract.bet(betInput.value, {value : ethers.utils.parseEther(betAmount.input)})
+             console.log(`you placed an amount of ${betAmount.value} with a value of ${betInput.value}`)
+            })
+        }
+     }catch(error){
+        console.log(error)
+     }
+ }
