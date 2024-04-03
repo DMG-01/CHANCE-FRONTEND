@@ -73,7 +73,11 @@ async function createCWOL() {
             string2 = await mainContract.returnCWOL_name(contractNameEl.value);
             console.log("contractAddress: "+ string2);
         } catch (error) {
-            console.log(error);
+            if (error.code === -32603 && error.data.originalError.message === 'execution reverted') {
+                console.log("Error: Restricted function call - Only main owner can call this function");
+            } else {
+                console.log(error);
+            }
         }
     }
 }
@@ -99,35 +103,51 @@ async function retrunTotalNOGCreated() {
     }
    }
 }
-//let CWOLaddresses = []
-//let encapulateCWOLaddresses = []
-let deployedCWOLaddresses = []
+let encapulateCWOLaddresses = []
+let deployedCWOLcontracts = []
+
 async function returnCWOL() {
     if (window.ethereum !== "undefined") {
         try {
             for (let i = 0; i < totalNumberOfCWOL; i++) {
-                let CWOLaddresses = await mainContract._courseWinOrLoseArray(i);
-                let encapsulateCWOLaddresses = `"${CWOLaddresses}"`;
-                deployedCWOLaddresses.push(new ethers.Contract(encapsulateCWOLaddresses, courseWinOrLoseABI, signer));
+                let CWOLaddress = await mainContract._courseWinOrLoseArray(i);
+                encapulateCWOLaddresses.push(CWOLaddress);
+                let newContract = new ethers.Contract(CWOLaddress, courseWinOrLoseABI, signer);
+                deployedCWOLcontracts.push(newContract);
+                let contractName = await newContract.returnContractName();
+                console.log(`Contract at address ${CWOLaddress} has name: ${contractName}`);
             }
-            console.log(deployedCWOLaddresses);
-            // Call showAllCWOLName after all contracts are instantiated
-            await showAllCWOLName();
         } catch(error) {
             console.log(error);
         }
     }
 }
 
+let returnCWOLNamesEl = document.getElementById("return_CWOL_NAMES")
+returnCWOLNamesEl.onclick = showAllCWOLName
+
 async function showAllCWOLName() {
-    if (window.ethereum !== "undefined") {
-        try {
-            for (let i = 0; i < totalNumberOfCWOL; i++) {
-                // Await the returnContractName method before logging
-                console.log(await deployedCWOLaddresses[i].returnContractName());
+    if(window.ethereum !== "undefined") {
+        try{
+            for(let i = 0; i < totalNumberOfCWOL; i++ ){
+             console.log(await deployedCWOLaddresses[i].returnContractName())
+            // console.log(names)
             }
-        } catch(error) {
-            console.log(error);
+        }catch(error) {
+            console.log(error)
         }
     }
+}
+let addOwnerEl = document.getElementById("addOwner")
+addOwnerEl.onclick =  addOwners()
+
+async function addOwners() {
+   if(window.ethereum == "undefined") {
+    try{
+        let newOwnerEl = document.getElementById("newOwnerInput").value
+        await mainContract.addOwner(newOwnerEl);
+    }catch(error){
+        console.log(error)
+    }
+   }
 }
