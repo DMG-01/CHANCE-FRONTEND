@@ -147,9 +147,23 @@ async function addOwners() {
          let newOwnerEl = document.getElementById("newOwnerInput").value;
  
          // Call the addOwner function with the new owner address
-         await mainContract.addOwner(/*'0x1Cf795D206c9213Fc9fb31f8513b7D523575a2e0'*/ ""+ newOwnerEl + "");
+         await mainContract.addOwner( ""+ newOwnerEl + "");
+         addOwnerEl.value = " "
     } catch(error) {
          console.log(error);
+    }
+ }
+let removeOwnerEl = document.getElementById("removeOwner")
+removeOwnerEl.onclick = removeOwner
+
+async function removeOwner() {
+
+    try {
+        let ownerAddress = document.getElementById("newOwnerInput").value
+      await mainContract.removeOwner("" + ownerAddress +"")
+      ownerAddress.value = ""
+    }catch(error){
+        console.log(error)
     }
  }
  
